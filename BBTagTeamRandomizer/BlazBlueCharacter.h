@@ -5,8 +5,8 @@
 
 typedef struct BlazBlueCharacter
 {
-	char* characterName;
-	class SDL_Texture* characterIcon;
+	const char* characterName;
+	struct SDL_Texture* characterIcon;
 } BBTagChar;
 
 #endif // !_BLAZBLUECHARACTER_HEADER

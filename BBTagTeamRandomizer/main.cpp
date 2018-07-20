@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <string.h>
+#include <string>
 
 #include <SDL.h>
 #include <SDL_image.h>
@@ -12,10 +12,11 @@
 #define DebugSDLIMGError() printf("SDL IMG Error: %s\n", IMG_GetError())
 #define DebugSDLTTFError() printf("SDL IMG Error: %s\n", TTF_GetError())
 
-#define DebugVerbose(msg) printf(msg)
+#define DebugVerbose(msg) printf(msg); printf("\n")
 
 void LoadResources(unsigned int short const charsInGame, BBTagChar* charArr, SDL_Renderer** windowRenderer)
 {
+	bool fullSuccess = true;
 	/* Set all character names */
 	const char* charNames[31] =
 	{
@@ -51,21 +52,20 @@ void LoadResources(unsigned int short const charsInGame, BBTagChar* charArr, SDL
 		"Blake",
 		"Yang"
 	};
-	const char* pathPrefix = "icons/", *imgType = ".png";
+	const char* pathPrefix = "char_icons/", *imgType = ".png", *loadedMsg = " loaded!";
 
 	SDL_Surface* currentImgSurf;
 
 	for (int i = 0; i < charsInGame; i++)
 	{
-		charArr[i].characterName = const_cast<char*>(charNames[i]);
+		charArr[i].characterName = charNames[i];
 		/* Builds the path to the image. */
-		char* currentPathString = nullptr;
-		strcat_s(currentPathString, sizeof(pathPrefix), pathPrefix);
-		strcat_s(currentPathString, sizeof(charNames[i]), charNames[i]);
-		strcat_s(currentPathString, sizeof(imgType), imgType);
+		std::string currentPathString = pathPrefix;
+		currentPathString += charNames[i];
+		currentPathString += imgType;
 
 		/* Loads the icon */
-		currentImgSurf = IMG_Load(currentPathString);
+		currentImgSurf = IMG_Load(currentPathString.c_str());
 		if (currentImgSurf == nullptr)
 		{
 			DebugSDLIMGError();
@@ -81,11 +81,9 @@ void LoadResources(unsigned int short const charsInGame, BBTagChar* charArr, SDL
 			}
 			/* When finished free surf from memory. */
 			SDL_FreeSurface(currentImgSurf);
-			strcat_s(currentPathString, sizeof(" loaded!\n"), " loaded!\n");
-			DebugVerbose(currentPathString);
+			currentPathString += loadedMsg;
+			DebugVerbose(currentPathString.c_str());
 		}
-		/* Free the memory occupied. */
-		free(currentPathString);
 	}
 }
 
@@ -122,4 +120,10 @@ int main(int argc, char* args[])
 	/* Loads resources to be used. */
 	LoadResources(CHARS_IN_GAME, bbtagCharacters, &mainWindowRenderer);
 
+	bool csgoLootBoxSimulatorIsRunning = true;
+
+	while (csgoLootBoxSimulatorIsRunning)
+	{
+
+	}
 }
