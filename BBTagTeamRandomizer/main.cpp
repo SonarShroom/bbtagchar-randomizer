@@ -25,11 +25,51 @@ enum LootBoxSimulatorMode
 	SHOWING_TEAM
 };
 
-bool LoadPNGFiles(const char* pathPrefix, const char* fileNamesWithoutExtention, NamedTexture controlledTexture[])
+bool LoadPNGFiles(const char* pathPrefix, const char* fileNamesWithoutExtention[], size_t numTexturesToLoad, NamedTexture controlledTexture[], SDL_Renderer** windowRenderer)
 {
 	bool success = true;
 
+	const char* loadedMsg = " loaded!";
+	SDL_Surface* currentImgSurf;
 
+	for (int i = 0; i < CHARS_IN_GAME; i++)
+	{
+		controlledTexture[i].m_textureName = fileNamesWithoutExtention[i];
+		/* Builds the path to the image. */
+		std::string currentPathString = pathPrefix;
+		currentPathString += fileNamesWithoutExtention[i];
+		currentPathString += ".png";
+
+		/* Loads the icon */
+		currentImgSurf = IMG_Load(currentPathString.c_str());
+		if (currentImgSurf == nullptr)
+		{
+			DebugSDLIMGError();
+			continue;
+		}
+		else
+		{
+			/* Set the current char icon */
+			controlledTexture[i].m_texture = SDL_CreateTextureFromSurface(*windowRenderer, currentImgSurf);
+
+			/* If the surface was not successfully converted, set error message */
+			if (controlledTexture[i].m_texture == nullptr)
+			{
+				DebugSDLError();
+				success = false;
+				continue;
+			}
+			/* Set the character icon rect's size */
+			controlledTexture[i].m_textureRect = { 0, 0, currentImgSurf->w, currentImgSurf->h };
+			/* When finished free surf from memory. */
+			SDL_FreeSurface(currentImgSurf);
+			currentPathString += loadedMsg;
+			DebugVerbose(currentPathString.c_str());
+		}
+	}
+	delete loadedMsg;
+
+	return success;
 }
 
 bool LoadCharacters(BlazBlueCharacter charArr[], SDL_Renderer** windowRenderer)
@@ -70,94 +110,17 @@ bool LoadCharacters(BlazBlueCharacter charArr[], SDL_Renderer** windowRenderer)
 		"Yang"
 	};
 
-	bool success = true;
-	const char* pathPrefix = "char_icons/", *imgType = ".png", *loadedMsg = " loaded!";
-
-	SDL_Surface* currentImgSurf;
-
-	for (int i = 0; i < CHARS_IN_GAME; i++)
-	{
-		charArr[i].m_textureName = charNames[i];
-		/* Builds the path to the image. */
-		std::string currentPathString = pathPrefix;
-		currentPathString += charNames[i];
-		currentPathString += imgType;
-
-		/* Loads the icon */
-		currentImgSurf = IMG_Load(currentPathString.c_str());
-		if (currentImgSurf == nullptr)
-		{
-			DebugSDLIMGError();
-			continue;
-		}
-		else
-		{
-			/* Set the current char icon */
-			charArr[i].m_texture = SDL_CreateTextureFromSurface(*windowRenderer, currentImgSurf);
-
-			/* If the surface was not successfully converted, set error message */
-			if (charArr[i].m_texture == nullptr)
-			{
-				DebugSDLError();
-				success = false;
-				continue;
-			}
-			/* Set the character icon rect's size */
-			charArr[i].m_textureRect = { 0, 0, currentImgSurf->w, currentImgSurf->h };
-			/* When finished free surf from memory. */
-			SDL_FreeSurface(currentImgSurf);
-			currentPathString += loadedMsg;
-			DebugVerbose(currentPathString.c_str());
-		}
-	}
-
-	return success;
+	return LoadPNGFiles("char_icons/", charNames, CHARS_IN_GAME, charArr, windowRenderer);
 }
 
 bool LoadGeneralTextures(MiscTexture* generalTextures, SDL_Renderer** windowRenderer)
 {
-	bool success = true;
 	const char* texturesToLoad[TEXTURES_TO_LOAD] =
 	{
 		"bbtag_logo"
 	};
-	const char* pathPrefix = "imgs/", *imgType = ".png", *loadedMsg = " loaded!";
 
-	SDL_Surface* currentImgSurf;
-	for (int i = 0; i < TEXTURES_TO_LOAD; i++)
-	{
-		/* Builds the path to the image. */
-		std::string currentPathString = pathPrefix;
-		currentPathString += texturesToLoad[i];
-		currentPathString += imgType;
-
-		/* Loads the icon */
-		currentImgSurf = IMG_Load(currentPathString.c_str());
-		if (currentImgSurf == nullptr)
-		{
-			DebugSDLIMGError();
-			success = false;
-		}
-		else
-		{
-			/* Set the current texture */
-			generalTextures[i].m_texture = SDL_CreateTextureFromSurface(*windowRenderer, currentImgSurf);
-			/* If the surface was not successfully converted, set error message */
-			if (generalTextures == nullptr)
-			{
-				DebugSDLError();
-				success = false;
-			}
-			/* Set the texture rect's size */
-			generalTextures[i].m_textureRect = {0, 0, currentImgSurf->w, currentImgSurf->h};
-			/* When finished free surf from memory. */
-			SDL_FreeSurface(currentImgSurf);
-			currentPathString += loadedMsg;
-			DebugVerbose(currentPathString.c_str());
-		}
-	}
-
-	return success;
+	return LoadPNGFiles("imgs/", texturesToLoad, TEXTURES_TO_LOAD, generalTextures, windowRenderer);
 }
 
 bool LoadResources(BlazBlueCharacter* charArr,
