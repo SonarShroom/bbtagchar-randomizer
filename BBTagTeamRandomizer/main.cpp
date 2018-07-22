@@ -149,7 +149,7 @@ void GenerateNewTeam(unsigned int charsInGame, BlazBlueCharacter bbtagCharacters
 
 void RenderTeamGeneration(BlazBlueCharacter* generatedTeam[])
 {
-
+	
 }
 
 void PollSDLEvents(bool& csgoLootBoxSimulatorIsRunning, LootBoxSimulatorMode& currentMode)
@@ -167,10 +167,24 @@ void PollSDLEvents(bool& csgoLootBoxSimulatorIsRunning, LootBoxSimulatorMode& cu
 				switch (e.key.keysym.sym)
 				{
 					case SDLK_SPACE:
-						currentMode = LootBoxSimulatorMode::GENERATING_TEAM;
+						switch (currentMode)
+						{
+							case LootBoxSimulatorMode::MAIN_MENU:
+								currentMode = LootBoxSimulatorMode::GENERATING_TEAM;
+							case LootBoxSimulatorMode::SHOWING_TEAM:
+								currentMode = LootBoxSimulatorMode::GENERATING_TEAM;
+						}
+						break;
+					case SDLK_RETURN:
+						if (currentMode == LootBoxSimulatorMode::SHOWING_TEAM)
+						{
+							currentMode = LootBoxSimulatorMode::MAIN_MENU;
+						}
 						break;
 					case SDLK_ESCAPE:
 						csgoLootBoxSimulatorIsRunning = false;
+						break;
+					default:
 						break;
 				}
 			break;
