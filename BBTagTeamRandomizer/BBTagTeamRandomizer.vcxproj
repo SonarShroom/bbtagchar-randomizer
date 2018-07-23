@@ -132,6 +132,8 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DebugHelpers.h" />
+    <ClInclude Include="GUIText.h" />
     <ClInclude Include="NamedTexture.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

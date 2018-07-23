@@ -23,5 +23,11 @@
     <ClInclude Include="NamedTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GUIText.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugHelpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

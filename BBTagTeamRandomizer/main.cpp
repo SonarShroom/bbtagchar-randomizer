@@ -1,19 +1,12 @@
 #include <stdio.h>
-#include <string>
-#include <vector>
 
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 
+#include "DebugHelpers.h"
 #include "NamedTexture.h"
-
-/* Generic error message macros */
-#define DebugSDLError() printf("SDL2 Error: %s\n", SDL_GetError())
-#define DebugSDLIMGError() printf("SDL IMG Error: %s\n", IMG_GetError())
-#define DebugSDLTTFError() printf("SDL IMG Error: %s\n", TTF_GetError())
-
-#define DebugVerbose(msg) printf(msg); printf("\n")
+#include "GUIText.h"
 
 #define CHARS_IN_GAME 31
 #define TEXTURES_TO_LOAD 1
@@ -25,52 +18,7 @@ enum LootBoxSimulatorMode
 	SHOWING_TEAM
 };
 
-bool LoadPNGFiles(const char* pathPrefix, const char* fileNamesWithoutExtention[], size_t numTexturesToLoad, NamedTexture controlledTexture[], SDL_Renderer** windowRenderer)
-{
-	bool success = true;
 
-	const char* loadedMsg = " loaded!";
-	SDL_Surface* currentImgSurf;
-
-	for (int i = 0; i < CHARS_IN_GAME; i++)
-	{
-		controlledTexture[i].m_textureName = fileNamesWithoutExtention[i];
-		/* Builds the path to the image. */
-		std::string currentPathString = pathPrefix;
-		currentPathString += fileNamesWithoutExtention[i];
-		currentPathString += ".png";
-
-		/* Loads the icon */
-		currentImgSurf = IMG_Load(currentPathString.c_str());
-		if (currentImgSurf == nullptr)
-		{
-			DebugSDLIMGError();
-			continue;
-		}
-		else
-		{
-			/* Set the current char icon */
-			controlledTexture[i].m_texture = SDL_CreateTextureFromSurface(*windowRenderer, currentImgSurf);
-
-			/* If the surface was not successfully converted, set error message */
-			if (controlledTexture[i].m_texture == nullptr)
-			{
-				DebugSDLError();
-				success = false;
-				continue;
-			}
-			/* Set the character icon rect's size */
-			controlledTexture[i].m_textureRect = { 0, 0, currentImgSurf->w, currentImgSurf->h };
-			/* When finished free surf from memory. */
-			SDL_FreeSurface(currentImgSurf);
-			currentPathString += loadedMsg;
-			DebugVerbose(currentPathString.c_str());
-		}
-	}
-	delete loadedMsg;
-
-	return success;
-}
 
 bool LoadCharacters(BlazBlueCharacter charArr[], SDL_Renderer** windowRenderer)
 {
@@ -127,7 +75,8 @@ bool LoadResources(BlazBlueCharacter* charArr,
 				   MiscTexture* generalTextures,
 				   SDL_Renderer** windowRenderer)
 {
-	return LoadCharacters(charArr, windowRenderer) && LoadGeneralTextures(generalTextures, windowRenderer);
+	return LoadCharacters(charArr, windowRenderer) && 
+		   LoadGeneralTextures(generalTextures, windowRenderer);
 }
 
 void RenderMenu()
